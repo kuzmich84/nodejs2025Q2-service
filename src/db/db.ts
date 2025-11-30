@@ -276,6 +276,36 @@ class Database {
       (id) => id !== trackId,
     );
   }
+
+  clearArtistReferences(artistId: string): void {
+    this.albums.forEach((album) => {
+      if (album.artistId === artistId) {
+        album.artistId = null;
+      }
+    });
+
+    this.tracks.forEach((track) => {
+      if (track.artistId === artistId) {
+        track.artistId = null;
+      }
+    });
+
+    this.clearArtistFromFavorites(artistId);
+  }
+
+  clearAlbumReferences(albumId: string): void {
+    this.tracks.forEach((track) => {
+      if (track.albumId === albumId) {
+        track.albumId = null;
+      }
+    });
+
+    this.clearAlbumFromFavorites(albumId);
+  }
+
+  clearTrackReferences(trackId: string): void {
+    this.clearTrackFromFavorites(trackId);
+  }
 }
 
 export const db = new Database();
