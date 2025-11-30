@@ -1,5 +1,11 @@
 import { User } from 'src/user/entities/users.entity';
 
+interface Favorites {
+  artists: string[];
+  albums: string[];
+  tracks: string[];
+}
+
 export class Artist {
   id: string;
   name: string;
@@ -21,10 +27,29 @@ export class Album {
   }
 }
 
+export class Track {
+  id: string;
+  name: string;
+  artistId: string | null;
+  albumId: string | null;
+  duration: number;
+
+  constructor(partial: Partial<Track> = {}) {
+    Object.assign(this, partial);
+  }
+}
+
 class Database {
   private users: User[] = [];
   private artists: Artist[] = [];
   private albums: Album[] = [];
+  private tracks: Track[] = [];
+
+  private favorites: Favorites = {
+    artists: [],
+    albums: [],
+    tracks: [],
+  };
 
   findAll(): User[] {
     return this.users;
@@ -142,6 +167,114 @@ class Database {
     if (index === -1) return false;
     this.albums.splice(index, 1);
     return true;
+  }
+  getAllTracks(): Track[] {
+    return this.tracks;
+  }
+
+  getTrackById(id: string): Track | undefined {
+    return this.tracks.find((t) => t.id === id);
+  }
+
+  createTrack(
+    name: string,
+    artistId: string | null,
+    albumId: string | null,
+    duration: number,
+  ): Track {
+    const track = new Track({
+      id: crypto.randomUUID(),
+      name,
+      artistId,
+      albumId,
+      duration,
+    });
+    this.tracks.push(track);
+    return track;
+  }
+
+  updateTrack(
+    id: string,
+    name: string,
+    artistId: string | null,
+    albumId: string | null,
+    duration: number,
+  ): Track | null {
+    const track = this.getTrackById(id);
+    if (!track) return null;
+
+    track.name = name;
+    track.artistId = artistId;
+    track.albumId = albumId;
+    track.duration = duration;
+    return track;
+  }
+
+  deleteTrack(id: string): boolean {
+    const index = this.tracks.findIndex((t) => t.id === id);
+    if (index === -1) return false;
+    this.tracks.splice(index, 1);
+    return true;
+  }
+  getFavorites(): Favorites {
+    return this.favorites;
+  }
+
+  addArtistToFavorites(id: string): void {
+    if (!this.favorites.artists.includes(id)) {
+      this.favorites.artists.push(id);
+    }
+  }
+
+  addAlbumToFavorites(id: string): void {
+    if (!this.favorites.albums.includes(id)) {
+      this.favorites.albums.push(id);
+    }
+  }
+
+  addTrackToFavorites(id: string): void {
+    if (!this.favorites.tracks.includes(id)) {
+      this.favorites.tracks.push(id);
+    }
+  }
+
+  removeArtistFromFavorites(id: string): boolean {
+    const index = this.favorites.artists.indexOf(id);
+    if (index === -1) return false;
+    this.favorites.artists.splice(index, 1);
+    return true;
+  }
+
+  removeAlbumFromFavorites(id: string): boolean {
+    const index = this.favorites.albums.indexOf(id);
+    if (index === -1) return false;
+    this.favorites.albums.splice(index, 1);
+    return true;
+  }
+
+  removeTrackFromFavorites(id: string): boolean {
+    const index = this.favorites.tracks.indexOf(id);
+    if (index === -1) return false;
+    this.favorites.tracks.splice(index, 1);
+    return true;
+  }
+
+  clearArtistFromFavorites(artistId: string): void {
+    this.favorites.artists = this.favorites.artists.filter(
+      (id) => id !== artistId,
+    );
+  }
+
+  clearAlbumFromFavorites(albumId: string): void {
+    this.favorites.albums = this.favorites.albums.filter(
+      (id) => id !== albumId,
+    );
+  }
+
+  clearTrackFromFavorites(trackId: string): void {
+    this.favorites.tracks = this.favorites.tracks.filter(
+      (id) => id !== trackId,
+    );
   }
 }
 
