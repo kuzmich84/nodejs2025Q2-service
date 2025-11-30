@@ -66,9 +66,15 @@ export class AlbumService {
   remove(id: string): void {
     this.validateUuid(id);
 
+    const album = db.getAlbumById(id);
+    if (!album) {
+      throw new NotFoundException(`Album with id ${id} not found`);
+    }
+
     const deleted = db.deleteAlbum(id);
     if (!deleted) {
       throw new NotFoundException(`Album with id ${id} not found`);
     }
+    db.clearAlbumReferences(id);
   }
 }

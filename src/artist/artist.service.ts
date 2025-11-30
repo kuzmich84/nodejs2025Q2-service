@@ -58,10 +58,14 @@ export class ArtistService {
 
   remove(id: string): void {
     this.validateUuid(id);
-
+    const artist = db.getArtistById(id);
+    if (!artist) {
+      throw new NotFoundException(`Artist with id ${id} not found`);
+    }
     const deleted = db.deleteArtist(id);
     if (!deleted) {
       throw new NotFoundException(`Artist with id ${id} not found`);
     }
+    db.clearArtistReferences(id);
   }
 }

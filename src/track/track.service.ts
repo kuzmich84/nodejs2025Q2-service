@@ -69,10 +69,15 @@ export class TrackService {
 
   remove(id: string): void {
     this.validateUuid(id);
+    const track = db.getTrackById(id);
+    if (!track) {
+      throw new NotFoundException(`Track with id ${id} not found`);
+    }
 
     const deleted = db.deleteTrack(id);
     if (!deleted) {
       throw new NotFoundException(`Track with id ${id} not found`);
     }
+    db.clearTrackReferences(id);
   }
 }
