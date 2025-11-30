@@ -20,7 +20,6 @@ export class FavoriteController {
     return this.favoriteService.findAll();
   }
 
-  // Track
   @Post('track/:id')
   @HttpCode(HttpStatus.CREATED)
   addTrack(@Param('id') id: string) {
@@ -34,7 +33,6 @@ export class FavoriteController {
     this.favoriteService.removeTrack(id);
   }
 
-  // Album
   @Post('album/:id')
   @HttpCode(HttpStatus.CREATED)
   addAlbum(@Param('id') id: string) {
@@ -48,7 +46,6 @@ export class FavoriteController {
     this.favoriteService.removeAlbum(id);
   }
 
-  // Artist
   @Post('artist/:id')
   @HttpCode(HttpStatus.CREATED)
   addArtist(@Param('id') id: string) {
