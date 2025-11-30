@@ -7,12 +7,11 @@ import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
 import { Album } from './entities/album.entity';
 import { db } from '../db/db';
+import { uuidV4Regex } from 'src/utils/uuidV4Regex';
 
 @Injectable()
 export class AlbumService {
   private isValidUuidV4(id: string): boolean {
-    const uuidV4Regex =
-      /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
     return uuidV4Regex.test(id);
   }
 

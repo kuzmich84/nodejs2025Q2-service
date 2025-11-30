@@ -9,12 +9,11 @@ import { Artist } from '../artist/entities/artist.entity';
 import { Album } from '../album/entities/album.entity';
 import { Track } from '../track/entities/track.entity';
 import { FavoritesResponseDto } from './dto/favorites-response.dto';
+import { uuidV4Regex } from 'src/utils/uuidV4Regex';
 
 @Injectable()
 export class FavoriteService {
   private isValidUuidV4(id: string): boolean {
-    const uuidV4Regex =
-      /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
     return uuidV4Regex.test(id);
   }
 
