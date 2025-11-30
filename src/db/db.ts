@@ -10,9 +10,21 @@ export class Artist {
   }
 }
 
+export class Album {
+  id: string;
+  name: string;
+  year: number;
+  artistId: string | null;
+
+  constructor(partial: Partial<Album> = {}) {
+    Object.assign(this, partial);
+  }
+}
+
 class Database {
   private users: User[] = [];
   private artists: Artist[] = [];
+  private albums: Album[] = [];
 
   findAll(): User[] {
     return this.users;
@@ -88,6 +100,47 @@ class Database {
     const index = this.artists.findIndex((a) => a.id === id);
     if (index === -1) return false;
     this.artists.splice(index, 1);
+    return true;
+  }
+
+  getAllAlbums(): Album[] {
+    return this.albums;
+  }
+
+  getAlbumById(id: string): Album | undefined {
+    return this.albums.find((a) => a.id === id);
+  }
+
+  createAlbum(name: string, year: number, artistId: string | null): Album {
+    const album = new Album({
+      id: crypto.randomUUID(),
+      name,
+      year,
+      artistId,
+    });
+    this.albums.push(album);
+    return album;
+  }
+
+  updateAlbum(
+    id: string,
+    name: string,
+    year: number,
+    artistId: string | null,
+  ): Album | null {
+    const album = this.getAlbumById(id);
+    if (!album) return null;
+
+    album.name = name;
+    album.year = year;
+    album.artistId = artistId;
+    return album;
+  }
+
+  deleteAlbum(id: string): boolean {
+    const index = this.albums.findIndex((a) => a.id === id);
+    if (index === -1) return false;
+    this.albums.splice(index, 1);
     return true;
   }
 }
