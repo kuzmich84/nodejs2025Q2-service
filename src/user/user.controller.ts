@@ -12,7 +12,7 @@ import {
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
-import { User } from '@prisma/client';
+import { User } from '../generated/prisma/client';
 
 @Controller('user')
 export class UserController {
@@ -24,18 +24,18 @@ export class UserController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string) {
     return this.userService.findOne(id);
   }
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  create(@Body() createUserDto: CreateUserDto) {
+  async create(@Body() createUserDto: CreateUserDto) {
     return this.userService.create(createUserDto);
   }
 
   @Put(':id')
-  updatePassword(
+  async updatePassword(
     @Param('id') id: string,
     @Body() updatePasswordDto: UpdatePasswordDto,
   ) {
@@ -44,7 +44,7 @@ export class UserController {
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string) {
     return this.userService.remove(id);
   }
 }

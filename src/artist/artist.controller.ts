@@ -12,7 +12,7 @@ import {
 import { ArtistService } from './artist.service';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
-import { Artist } from '@prisma/client';
+import { Artist } from '../generated/prisma/client';
 
 @Controller('artist')
 export class ArtistController {
@@ -24,24 +24,27 @@ export class ArtistController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string) {
     return this.artistService.findOne(id);
   }
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  create(@Body() createArtistDto: CreateArtistDto) {
+  async create(@Body() createArtistDto: CreateArtistDto) {
     return this.artistService.create(createArtistDto);
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() updateArtistDto: UpdateArtistDto) {
+  async update(
+    @Param('id') id: string,
+    @Body() updateArtistDto: UpdateArtistDto,
+  ) {
     return this.artistService.update(id, updateArtistDto);
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  remove(@Param('id') id: string) {
-    this.artistService.remove(id);
+  async remove(@Param('id') id: string) {
+    return this.artistService.remove(id);
   }
 }

@@ -7,7 +7,7 @@ import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
 import { uuidV4Regex } from 'src/utils/uuidV4Regex';
 import { PrismaService } from 'prisma/prisma.service';
-import { Artist } from '@prisma/client';
+import { Artist } from '../generated/prisma/client';
 
 @Injectable()
 export class ArtistService {
@@ -58,10 +58,8 @@ export class ArtistService {
 
   async remove(id: string): Promise<void> {
     this.validateUuid(id);
-    const artist = this.prisma.artist.findUnique({ where: { id } });
-    if (!artist) {
-      throw new NotFoundException(`Artist with id ${id} not found`);
-    }
+    const artist = await this.prisma.artist.findUnique({ where: { id } });
+    if (!artist) throw new NotFoundException(`Artist with id ${id} not found`);
 
     await this.prisma.track.updateMany({
       where: { artistId: id },
@@ -80,9 +78,6 @@ export class ArtistService {
       });
     }
 
-    const deleted = await this.prisma.artist.delete({ where: { id } });
-    if (!deleted) {
-      throw new NotFoundException(`Artist with id ${id} not found`);
-    }
+    await this.prisma.artist.delete({ where: { id } });
   }
 }

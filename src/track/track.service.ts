@@ -5,10 +5,9 @@ import {
 } from '@nestjs/common';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
-import { db } from '../db/db';
 import { uuidV4Regex } from 'src/utils/uuidV4Regex';
-import { Track } from '@prisma/client';
 import { PrismaService } from 'prisma/prisma.service';
+import { Track } from '../generated/prisma/client';
 
 @Injectable()
 export class TrackService {
@@ -47,7 +46,13 @@ export class TrackService {
 
   async update(id: string, dto: UpdateTrackDto): Promise<Track> {
     this.validateUuid(id);
-    return this.prisma.track.update({
+
+    const track = await this.prisma.track.findUnique({ where: { id } });
+    if (!track) {
+      throw new NotFoundException(`Track with id ${id} not found`);
+    }
+
+    return await this.prisma.track.update({
       where: { id },
       data: {
         ...dto,

@@ -73,7 +73,7 @@ export class FavoriteService {
   async addAlbum(id: string): Promise<void> {
     this.validateUuid(id);
 
-    const album = this.prisma.album.findUnique({ where: { id } });
+    const album = await this.prisma.album.findUnique({ where: { id } });
     if (!album) {
       throw new UnprocessableEntityException(
         'Album with such id does not exist',
@@ -96,12 +96,12 @@ export class FavoriteService {
 
     const favs = await this.prisma.favorites.findFirst();
 
-    if (!favs || !favs.tracks.includes(id)) {
+    if (!favs || !favs.albums.includes(id)) {
       throw new NotFoundException('Track is not in favorites');
     }
     await this.prisma.favorites.update({
       where: { id: favs.id },
-      data: { albums: { set: favs.tracks.filter((t) => t !== id) } },
+      data: { albums: { set: favs.albums.filter((t) => t !== id) } },
     });
   }
 
@@ -135,7 +135,7 @@ export class FavoriteService {
     }
     await this.prisma.favorites.update({
       where: { id: favs.id },
-      data: { artists: { set: favs.tracks.filter((t) => t !== id) } },
+      data: { artists: { set: favs.artists.filter((t) => t !== id) } },
     });
   }
 }

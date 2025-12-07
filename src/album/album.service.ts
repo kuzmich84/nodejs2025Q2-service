@@ -5,10 +5,9 @@ import {
 } from '@nestjs/common';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
-import { db } from '../db/db';
 import { uuidV4Regex } from 'src/utils/uuidV4Regex';
-import { Album } from '@prisma/client';
 import { PrismaService } from 'prisma/prisma.service';
+import { Album } from '../generated/prisma/client';
 
 @Injectable()
 export class AlbumService {
@@ -25,7 +24,7 @@ export class AlbumService {
   }
 
   async findAll(): Promise<Album[]> {
-    return await this.prisma.album.findMany();
+    return this.prisma.album.findMany();
   }
 
   async findOne(id: string): Promise<Album> {
@@ -45,7 +44,13 @@ export class AlbumService {
 
   async update(id: string, dto: UpdateAlbumDto): Promise<Album> {
     this.validateUuid(id);
-    return this.prisma.album.update({
+
+    const album = await this.prisma.album.findUnique({ where: { id } });
+    if (!album) {
+      throw new NotFoundException(`Album with id ${id} not found`);
+    }
+
+    return await this.prisma.album.update({
       where: { id },
       data: { ...dto, artistId: dto.artistId ?? undefined },
     });
