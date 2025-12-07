@@ -23,7 +23,8 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "clean:start": "docker compose down -v && docker compose up -d && docker compose exec api npx prisma migrate deploy"
+    "clean:start": "docker compose down -v && docker compose up -d && docker compose exec api npx prisma migrate deploy",
+    "security": "npm audit --audit-level=high && npx snyk test || true"
   },
   "dependencies": {
     "@nestjs/common": "^10.4.16",
