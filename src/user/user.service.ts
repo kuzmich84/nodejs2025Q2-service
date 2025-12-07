@@ -7,11 +7,15 @@ import {
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { db } from '../db/db';
-import { User } from './entities/users.entity';
+
 import { uuidV4Regex } from 'src/utils/uuidV4Regex';
+import { PrismaService } from 'prisma/prisma.service';
+import { User } from '@prisma/client';
 
 @Injectable()
 export class UserService {
+  constructor(private prisma: PrismaService) {}
+
   private isValidUuidV4(id: string): boolean {
     return uuidV4Regex.test(id);
   }
@@ -21,43 +25,55 @@ export class UserService {
       throw new BadRequestException('Invalid UUID');
     }
   }
-  findAll(): User[] {
-    return db.findAll();
+
+  async findAll(): Promise<User[]> {
+    return await this.prisma.user.findMany();
   }
 
-  findOne(id: string): User {
+  async findOne(id: string): Promise<User> {
     this.validateUuid(id);
-    const user = db.findOne(id);
+    const user = await this.prisma.user.findUnique({ where: { id } });
     if (!user) {
       throw new NotFoundException(`User with id ${id} not found`);
     }
     return user;
   }
 
-  create(createUserDto: CreateUserDto): User {
-    return db.create(createUserDto.login, createUserDto.password);
+  async create(createUserDto: CreateUserDto): Promise<User> {
+    const now = Date.now();
+    return await this.prisma.user.create({
+      data: {
+        ...createUserDto,
+        createdAt: now,
+        updatedAt: now,
+      },
+    });
   }
 
-  updatePassword(id: string, dto: UpdatePasswordDto): User {
+  async updatePassword(id: string, dto: UpdatePasswordDto): Promise<User> {
     this.validateUuid(id);
 
-    const user = db.findOne(id);
+    const user = await this.prisma.user.findUnique({ where: { id } });
     if (!user) {
       throw new NotFoundException(`User with id ${id} not found`);
     }
 
-    const updated = db.updatePassword(id, dto.oldPassword, dto.newPassword);
-    if (!updated) {
+    if (user.password !== dto.oldPassword) {
       throw new ForbiddenException('Old password is incorrect');
     }
+
+    const updated = await this.prisma.user.update({
+      where: { id },
+      data: { password: dto.newPassword, updatedAt: Date.now() },
+    });
 
     return updated;
   }
 
-  remove(id: string): void {
+  async remove(id: string): Promise<void> {
     this.validateUuid(id);
 
-    const deleted = db.delete(id);
+    const deleted = this.prisma.user.deleteMany({ where: { id } });
     if (!deleted) {
       throw new NotFoundException(`User with id ${id} not found`);
     }

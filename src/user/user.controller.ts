@@ -1,4 +1,3 @@
-// src/user/user.controller.ts
 import {
   Controller,
   Get,
@@ -13,14 +12,14 @@ import {
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
-import { User } from './entities/users.entity';
+import { User } from '@prisma/client';
 
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get()
-  findAll(): User[] {
+  async findAll(): Promise<User[]> {
     return this.userService.findAll();
   }
 

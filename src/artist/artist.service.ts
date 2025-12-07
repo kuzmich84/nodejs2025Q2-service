@@ -5,9 +5,9 @@ import {
 } from '@nestjs/common';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
-import { Artist } from './entities/artist.entity';
 import { uuidV4Regex } from 'src/utils/uuidV4Regex';
 import { PrismaService } from 'prisma/prisma.service';
+import { Artist } from '@prisma/client';
 
 @Injectable()
 export class ArtistService {
@@ -37,7 +37,7 @@ export class ArtistService {
   }
 
   async create(createArtistDto: CreateArtistDto): Promise<Artist> {
-    return this.prisma.artist.create({ data: createArtistDto });
+    return await this.prisma.artist.create({ data: createArtistDto });
   }
 
   async update(id: string, updateArtistDto: UpdateArtistDto): Promise<Artist> {
