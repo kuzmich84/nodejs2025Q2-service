@@ -8,7 +8,6 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 
-import { FavoritesResponseDto } from './dto/favorites-response.dto';
 import { FavoriteService } from './favorite.service';
 
 @Controller('favs')
@@ -16,7 +15,7 @@ export class FavoriteController {
   constructor(private readonly favoriteService: FavoriteService) {}
 
   @Get()
-  findAll(): FavoritesResponseDto {
+  findAll() {
     return this.favoriteService.findAll();
   }
 
