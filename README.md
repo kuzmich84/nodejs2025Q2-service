@@ -40,10 +40,11 @@ services:
       - DATABASE_URL=${DATABASE_URL}
     depends_on:
       - postgres
-    command: npm run start:dev
+    command: npm run start:dev && npx prisma migrate deploy
 
 volumes:
   postgres_data:
+
 
 ```
 
