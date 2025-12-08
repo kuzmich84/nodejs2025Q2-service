@@ -1,39 +1,50 @@
 # Home Library Service
 
-## Prerequisites
+## Run app to use docker image:
 
-- Git - [Download & Install Git](https://git-scm.com/downloads).
-- Node.js - [Download & Install Node.js](https://nodejs.org/en/download/) and the npm package manager.
-
-## Downloading
-
-```
-git clone https://github.com/kuzmich84/nodejs2025Q2-service.git
-```
-
-## Installing NPM modules
-
-```
-cd nodejs2025Q4-service
-npm install
-```
-
-#### 2. Configure environment variables
-
-```bash
-cp .env.example .env
-```
-
-Edit the `.env` file with your preferred values. **For Docker, use `postgres` as the database host:**
+#### 1. Configure environment variables
 
 ```env
-# Database URL (use 'postgres' as host for Docker)
+PORT=4000
 DATABASE_URL="postgresql://postgres:postgrespassword@postgres:5432/musicdb?schema=public"
 
 POSTGRES_USER=postgres
 POSTGRES_PASSWORD=postgrespassword
 POSTGRES_DB=musicdb
 POSTGRES_PORT=5432
+```
+
+#### 2. Create file docker-compose.yml
+
+```
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - ${POSTGRES_PORT}:${POSTGRES_PORT}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  api:
+    image: kuzmich84/music-api:latest
+    restart: always
+    ports:
+      - ${PORT}:${PORT}
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+    depends_on:
+      - postgres
+    command: npm run start:dev
+
+volumes:
+  postgres_data:
+
 ```
 
 #### 3. Start the application
@@ -76,7 +87,7 @@ docker compose up
 
 If you prefer to run the application without Docker, you have two options:
 
-### Option 1: Local Application with Database in Docker
+### Option: Local Application with Database in Docker
 
 This approach runs the application locally, using Docker only for PostgreSQL.
 
