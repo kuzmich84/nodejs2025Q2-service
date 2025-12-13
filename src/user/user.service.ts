@@ -120,4 +120,18 @@ export class UserService {
       throw new NotFoundException(`User with id ${id} not found`);
     }
   }
+
+  async findByLogin(login: string): Promise<User | null> {
+    return this.prisma.user.findFirst({
+      where: { login },
+      select: {
+        id: true,
+        login: true,
+        password: true,
+        version: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+  }
 }
