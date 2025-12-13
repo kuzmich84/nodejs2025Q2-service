@@ -7,7 +7,7 @@ import {
 import { UserService } from '../user/user.service';
 import { LoginDto } from './dto/login.dto';
 import { RefreshDto } from './dto/refresh.dto';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
 import { SignupDto } from './dto/signup.dto';
 import type { StringValue } from 'ms';
@@ -20,11 +20,6 @@ export class AuthService {
   ) {}
 
   async signup(dto: SignupDto) {
-    const existing = await this.userService.findByLogin(dto.login);
-    if (existing) {
-      throw new BadRequestException('Login already exists');
-    }
-
     const hashed = await bcrypt.hash(dto.password, 10);
 
     const user = await this.userService.create({
