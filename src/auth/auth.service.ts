@@ -46,12 +46,16 @@ export class AuthService {
   }
 
   async refresh(dto: RefreshDto) {
+    if (!dto.refreshToken) {
+      throw new UnauthorizedException('Refresh token is required');
+    }
+
     try {
       const payload = this.jwtService.verify(dto.refreshToken, {
-        secret: process.env.JWT_REFRESH_SECRET,
+        secret: process.env.JWT_REFRESH_SECRET!,
       });
 
-      const tokens = await this.generateTokens(payload.userId, payload.login);
+      const tokens = this.generateTokens(payload.userId, payload.login);
       return tokens;
     } catch (error) {
       throw new ForbiddenException('Invalid or expired refresh token');
